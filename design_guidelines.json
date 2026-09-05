@@ -1,0 +1,142 @@
+{
+  "app_name": "AquaSuíno",
+  "archetype": "ARCHETYPE 1: ORGANIC & EARTHY + SWISS HIGH-CONTRAST (Sustentabilidade + Água Tech)",
+  "theme": {
+    "default_mode": "light",
+    "pitch_friendly": true,
+    "description": "Limpo e vibrante, otimizado para projeção em telão de pitch. Tons verde esmeralda (bioenergia/terra) e azul ciano/acqua (água/pureza) sobre superfícies de alto contraste."
+  },
+  "colors": {
+    "primary": {
+      "main": "#059669",
+      "light": "#34D399",
+      "dark": "#064E3B",
+      "label": "Emerald Bio Green"
+    },
+    "secondary": {
+      "main": "#0284C7",
+      "light": "#38BDF8",
+      "dark": "#0C4A6E",
+      "label": "Hydro Aqua Blue"
+    },
+    "accent": {
+      "amber": "#D97706",
+      "rose": "#E11D48",
+      "teal": "#0D9488",
+      "lime": "#65A30D"
+    },
+    "background": {
+      "light": "#F8FAFC",
+      "light_card": "#FFFFFF",
+      "dark": "#0F172A",
+      "dark_card": "#1E293B"
+    },
+    "text": {
+      "primary_light": "#0F172A",
+      "secondary_light": "#475569",
+      "primary_dark": "#F8FAFC",
+      "secondary_dark": "#94A3B8"
+    },
+    "borders": {
+      "light": "rgba(148, 163, 184, 0.25)",
+      "dark": "rgba(255, 255, 255, 0.12)"
+    }
+  },
+  "typography": {
+    "heading_font": "Outfit, Cabinet Grotesk, sans-serif",
+    "body_font": "Inter, DM Sans, sans-serif",
+    "mono_font": "JetBrains Mono, monospace",
+    "pitch_scale": {
+      "h1_hero": "text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight",
+      "h2_section": "text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight",
+      "h3_card_title": "text-lg sm:text-xl font-semibold",
+      "big_kpi_value": "text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight",
+      "kpi_label": "text-xs sm:text-sm font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400"
+    }
+  },
+  "layout_and_spacing": {
+    "spacing_philosophy": "Generous Spacing (2-3x default) with high density data hierarchy for dashboard views.",
+    "pitch_projection_rules": "All primary KPI cards must have large values (36px+) visible from a distance on pitch screens.",
+    "charts_per_screen_limit": 2,
+    "bento_grid_modes": {
+      "landing": "grid-cols-1 md:grid-cols-12 gap-6 lg:gap-8",
+      "dashboard_kpis": "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6",
+      "dashboard_charts": "grid-cols-1 lg:grid-cols-2 gap-6"
+    }
+  },
+  "components_structure": {
+    "role_selector": "Floating/Fixed Top Banner with 3 role tabs: 'Produtor Rural', 'Frivatti (Empresa)', 'Prefeitura (Gestão Pública)'. Allows instant role switch for demo.",
+    "landing_page": {
+      "sections": [
+        "Hero Pitch Section with high-contrast badge and CTA 'Explorar Piloto Demo'",
+        "Modelo 4 Passos: Medir → Reduzir → Tratar → Reaproveitar (Interactive visual flow cards)",
+        "Impact Calculator / Pitch Stats (10 Propriedades, 10 Meses, Economia de Água + Biogás m³)",
+        "Parceiros do Piloto (Produtores + Frivatti + Prefeitura de Itapiranga/SC)"
+      ]
+    },
+    "dashboards": {
+      "produtor": {
+        "kpis": ["Consumo Atual (m³)", "Meta do Mês (m³)", "Bônus Estimado R$", "Status de Alerta"],
+        "charts": ["Evolução de Consumo x Meta (Linha/Barra)", "Aproveitamento de Dejetos & Biogás (m³)"],
+        "actions": ["Lançar Leitura com Foto do Hidrômetro", "Registrar Lote de Dejetos", "Ver Alertas Ativos"]
+      },
+      "frivatti": {
+        "kpis": ["Total Rede (10 Propriedades)", "Adesão ao Programa (%)", "Rastreabilidade CONAMA (%)", "Bônus Total Distribuído (R$)"],
+        "charts": ["Ranking de Eficiência Hídrica dos Produtores", "Volume de Dejetos Tratados x Meta"],
+        "actions": ["Exportar Relatório Consolidado", "Filtrar Produtores por Status", "Visualizar Rastreabilidade"]
+      },
+      "prefeitura": {
+        "kpis": ["m³ Água Economizada", "m³ Biogás Gerado", "Retorno Econômico Regional (R$)", "Adesão do Piloto"],
+        "charts": ["Distribuição Espacial / Mapa das 10 Propriedades", "Impacto Ambiental Agregado (Paz de Espírito Sanitária)"],
+        "actions": ["Gerar Relatório PDF de Viabilidade do Piloto", "Simular Expansão para 50 Propriedades"]
+      }
+    },
+    "dejetos_biogas_module": "Calculadora e registro de dejetos suínos, estimativa de produção de biogás (m³) e biofertilizante, e emissão de selo de rastreabilidade CONAMA.",
+    "pdf_viability_report": "Geração client-side / backend de relatório PDF do piloto de 10 meses com comparativo pré/pós e viabilidade financeira."
+  },
+  "image_urls": {
+    "swine_water_faucet": "https://images.unsplash.com/photo-1757342396554-c904a02afc8d?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDQ2NDN8MHwxfHNlYXJjaHwxfHxzdXN0YWluYWJsZSUyMHN3aW5lJTIwZmFybSUyMHdhdGVyJTIwYmlvZ2FzJTIwZ3JlZW4lMjB0ZWNobm9sb2d5fGVufDB8fHx8MTc4ODY1MTc0NXww&ixlib=rb-4.1.0&q=85",
+    "swine_farm_outdoor": "https://images.unsplash.com/photo-1728303945677-3365e4646cd1?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDQ2NDN8MHwxfHNlYXJjaHwzfHxzdXN0YWluYWJsZSUyMHN3aW5lJTIwZmFybSUyMHdhdGVyJTIwYmlvZ2FzJTIwZ3JlZW4lMjB0ZWNobm9sb2d5fGVufDB8fHx8MTc4ODY1MTc0NXww&ixlib=rb-4.1.0&q=85",
+    "biogas_facility_aerial": "https://images.pexels.com/photos/32543708/pexels-photo-32543708.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+    "sustainable_agriculture_irrigation": "https://images.unsplash.com/photo-1758414089320-dac72d347fca?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjAzOTB8MHwxfHNlYXJjaHw0fHx3YXRlciUyMG1ldGVyJTIwaW5kdXN0cmlhbCUyMGZhcm0lMjB0ZWNobm9sb2d5fGVufDB8fHx8MTc4ODY1MTc1Mnww&ixlib=rb-4.1.0&q=85",
+    "green_energy_solar_field": "https://images.unsplash.com/photo-1780922576334-8f8d4e8740cf?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA3MDR8MHwxfHNlYXJjaHwzfHxiaW9nYXMlMjBiaW9lbmVyZ3klMjBwbGFudCUyMHNvbGFyJTIwZ3JlZW4lMjBmYXJtfGVufDB8fHx8MTc4ODY1MTc1Mnww&ixlib=rb-4.1.0&q=85"
+  },
+  "icons_library": {
+    "preferred": "lucide-react",
+    "key_icons": {
+      "water": "Droplets, Gauge, Waves",
+      "biogas": "Flame, Zap, Wind",
+      "producer": "Tractor, UserCheck, ShieldCheck",
+      "frivatti": "Building2, TrendingUp, Award",
+      "prefeitura": "Landmark, MapPin, BarChart3",
+      "camera": "Camera, Upload, FileCheck",
+      "alert": "AlertTriangle, Bell, CheckCircle2"
+    }
+  },
+  "testing_and_accessibility": {
+    "data_testid_rule": "MUST add data-testid to every button, link, tab, input, dialog, card, chart container and key KPI number.",
+    "examples": [
+      "data-testid='role-selector-produtor'",
+      "data-testid='role-selector-frivatti'",
+      "data-testid='role-selector-prefeitura'",
+      "data-testid='kpi-water-consumption'",
+      "data-testid='btn-upload-meter-reading'",
+      "data-testid='btn-generate-pdf-report'"
+    ]
+  },
+  "UNIVERSAL GUIDELINES FOR MAIN AGENT": [
+    "You tend to converge toward generic, 'on distribution' outputs. In frontend design, this creates what users call the 'AI slop' aesthetic. Avoid this: make creative, distinctive frontends that surprise and delight.",
+    "Dark colors look good when used independently without gradients. DO NOT use dark colors as gradients.",
+    "Don't make generic centered layouts, simplistic gradients, and uniform styling.",
+    "Create depth through layered design elements with z-index hierarchy.",
+    "Use glass-morphism effects with backdrop filters (12-24px blur).",
+    "You MUST NOT apply universal transition (e.g. transition: all). Always add transitions for specific interactive elements like button, input excluding transforms.",
+    "You MUST NOT center align the app container (.App { text-align: center; }).",
+    "Always use modern button styles like pill-shaped, or sharp button with interaction animations & color relevant to the app style.",
+    "NEVER use AI assistant Emoji characters like 🤖🧠💭💡🔮🎯 for icons. Use lucide-react icons exclusively.",
+    "Every interaction needs micro-animations - hover states, transitions, entrance animations. Static = dead.",
+    "Use 2-3x more spacing than feels comfortable.",
+    "All interactive and key informational elements MUST include a data-testid attribute in kebab-case format.",
+    "Make sure the UI looks stunning when projected on a large screen (telão de pitch) with bold numbers and clear visual hierarchy."
+  ]
+}

@@ -1,0 +1,34 @@
+{
+  "summary": "First-finish smoke test on AquaSuíno. All 9 backend endpoints tested pass (GET propriedades/detail/dashboards, POST leituras/dejetos/propriedades/alertas-resolver, GET PDF). All 3 dashboards (Produtor, Frivatti, Prefeitura) load without JS errors and render KPIs + charts + data (11 propriedades incl. one created via POST test). Nova-leitura dialog opens with input-leitura-m3 present. No console errors.",
+  "tested_scope": ["backend", "frontend", "integration"],
+  "passed": [
+    "GET /api/propriedades -> 200, returns 10 seeded properties (11 after POST test)",
+    "GET /api/propriedades/{id} -> 200, has propriedade, leituras(10), dejetos(10), alertas(1), resumo (all required keys)",
+    "GET /api/dashboard/frivatti -> 200, total_propriedades, adesao_pct, bonus_total_brl, ranking(10)",
+    "GET /api/dashboard/prefeitura -> 200, economia_m3=506.5 (screenshot 259.266 aggregated), biogas_m3, retorno_economico_brl, municipios, propriedades",
+    "POST /api/leituras (multipart) -> 200, computes consumo_m3 correctly (leitura - previous)",
+    "POST /api/dejetos -> 200, biogas_m3 = volume_kg * 0.062 = 62.0 for 1000 kg (Embrapa factor correct)",
+    "POST /api/alertas/{id}/resolver -> 200 {ok:true}",
+    "GET /api/relatorio/viabilidade -> 200 application/pdf 5363 bytes (>3KB)",
+    "POST /api/propriedades -> 200 creates new property",
+    "Landing renders hero, 4 steps (Medir/Reduzir/Tratar/Reaproveitar), 3 role selectors",
+    "Produtor dashboard loads, charts render (Consumo x Meta line, Biogás x Dejetos bar), Nova leitura + Registrar dejetos buttons visible",
+    "Frivatti dashboard renders 4 KPI cards + Ranking chart + Biogás chart + Exportar PDF button",
+    "Prefeitura dashboard renders 4 KPIs (259.266 m³ economia, 880.036 m³ biogás, R$ 794.772, 55% adesão) + pie chart + aggregate panel",
+    "Nova leitura dialog opens with input-leitura-m3 field",
+    "No JS/console errors on any page"
+  ],
+  "failed": [
+    {"area": "frontend data-testid", "issue": "Missing testids: kpi-meta, kpi-bonus, kpi-alertas (only kpi-consumo-ultimo present on Produtor)", "evidence": "locator count = 0 for these three; UI renders values correctly", "priority": "MEDIUM"},
+    {"area": "frontend data-testid", "issue": "btn-baixar-pdf-viabilidade testid not found on Frivatti/Prefeitura; buttons exist as 'Exportar Relatório PDF' / 'Gerar Relatório de Viabilidade (PDF)'", "evidence": "locator count = 0; buttons visible in screenshots", "priority": "MEDIUM"}
+  ],
+  "action_items": [
+    "Add data-testid='kpi-meta', 'kpi-bonus', 'kpi-alertas' on ProdutorDashboard KPI cards to match spec",
+    "Add data-testid='btn-baixar-pdf-viabilidade' on the PDF download buttons in Frivatti and Prefeitura dashboards"
+  ],
+  "success_rate": {"backend": "100%", "frontend": "95%"},
+  "retest_needed": false,
+  "full_testing_deferred": true,
+  "test_credentials": "N/A - role selector, no login required",
+  "notes": "Object storage init did not block leitura POST (photo optional, not sent). Produtor page defaults to first property in list (Test Farm created during POST test showed empty KPIs - expected)."
+}
