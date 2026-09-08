@@ -1,7 +1,10 @@
 """AquaSuíno backend — hydric + waste management for swine farms."""
-from fastapi import FastAPI, APIRouter, HTTPException, UploadFile, File, Form, Response
-from fastapi.responses import StreamingResponse
+from pathlib import Path
 from dotenv import load_dotenv
+load_dotenv(Path(__file__).parent / ".env")
+
+from fastapi import FastAPI, APIRouter, HTTPException, UploadFile, File, Form, Response, Depends, Request
+from fastapi.responses import StreamingResponse
 from starlette.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
 from pydantic import BaseModel, Field, ConfigDict
