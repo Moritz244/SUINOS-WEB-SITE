@@ -1,151 +1,29 @@
 import { Link } from "react-router-dom";
-import { Droplets, Gauge, Recycle, Flame, ArrowRight, Tractor, Building2, Landmark, CheckCircle2 } from "lucide-react";
+import { ArrowRight, Droplets, Gauge, Wallet, Landmark, Tractor, ShieldCheck, FileText } from "lucide-react";
+import { useAuth, homeFor } from "../lib/auth";
 
-const STEPS = [
-  { icon: Gauge, title: "Medir", desc: "Leitura mensal do hidrômetro por propriedade, com foto pra auditoria.", color: "from-emerald-500 to-emerald-600" },
-  { icon: Droplets, title: "Reduzir", desc: "Meta de -10% sobre a baseline, alertas de vazamento e ranking de eficiência.", color: "from-sky-500 to-sky-600" },
-  { icon: Recycle, title: "Tratar", desc: "Registro de dejetos + destino do digestato conforme CONAMA.", color: "from-teal-500 to-teal-600" },
-  { icon: Flame, title: "Reaproveitar", desc: "Estimativa de biogás (m³) via fator Embrapa e aproveitamento energético.", color: "from-amber-500 to-amber-600" },
-];
-
-const PROFILES = [
-  { role: "produtor", icon: Tractor, title: "Produtor Rural", desc: "Acompanhe consumo, bata metas e ganhe bônus Frivatti.", path: "/produtor", accent: "emerald" },
-  { role: "frivatti", icon: Building2, title: "Frivatti", desc: "Rede de produtores, ranking de eficiência e rastreabilidade.", path: "/frivatti", accent: "sky" },
-  { role: "prefeitura", icon: Landmark, title: "Prefeitura", desc: "KPIs agregados do piloto e relatório PDF de viabilidade.", path: "/prefeitura", accent: "amber" },
-];
-
-export default function Landing() {
-  return (
-    <div className="fade-in">
-      {/* HERO */}
-      <section className="relative overflow-hidden">
-        <div className="absolute inset-0 -z-10">
-          <div className="absolute -top-32 -left-32 w-[520px] h-[520px] rounded-full bg-emerald-100/70 blur-3xl" />
-          <div className="absolute top-20 -right-20 w-[420px] h-[420px] rounded-full bg-sky-100/70 blur-3xl" />
-        </div>
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 pt-16 pb-20 lg:pt-24 lg:pb-28 grid lg:grid-cols-12 gap-10 items-center">
-          <div className="lg:col-span-7">
-            <div className="inline-flex items-center gap-2 rounded-full bg-white border border-emerald-200 px-3 py-1.5 shadow-sm mb-6">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-              <span className="text-xs font-semibold uppercase tracking-widest text-emerald-700">Piloto · 10 Propriedades · 10 Meses</span>
-            </div>
-            <h1 className="font-display text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-slate-900 leading-[1.05]" data-testid="hero-title">
-              Gestão hídrica e de dejetos<br />
-              <span className="bg-gradient-to-r from-emerald-600 to-sky-600 bg-clip-text text-transparent">para a suinocultura</span>
-            </h1>
-            <p className="mt-6 text-lg sm:text-xl text-slate-600 max-w-2xl leading-relaxed">
-              O AquaSuíno mede o consumo de água, monitora dejetos, estima biogás e prova viabilidade
-              econômica pra uma rede produtor + frigorífico + prefeitura.
-            </p>
-            <div className="mt-8 flex flex-wrap gap-3">
-              <Link to="/prefeitura" className="btn-primary pill px-6 py-3 font-semibold inline-flex items-center gap-2" data-testid="cta-explorar-demo">
-                Explorar Piloto Demo <ArrowRight className="w-4 h-4" />
-              </Link>
-              <Link to="/produtor" className="pill px-6 py-3 font-semibold inline-flex items-center gap-2 bg-white border border-slate-200 hover:border-slate-300 text-slate-800 transition-colors" data-testid="cta-produtor">
-                Sou produtor <Tractor className="w-4 h-4" />
-              </Link>
-            </div>
-            <div className="mt-10 grid grid-cols-3 gap-4 max-w-xl">
-              {[
-                { v: "10", l: "Propriedades" },
-                { v: "10", l: "Meses de dados" },
-                { v: "-10%", l: "Meta hídrica" },
-              ].map((s, i) => (
-                <div key={i} className="border-l-2 border-emerald-500 pl-3">
-                  <div className="font-display text-3xl font-black text-slate-900">{s.v}</div>
-                  <div className="text-xs uppercase tracking-wider text-slate-500 mt-0.5">{s.l}</div>
-                </div>
-              ))}
-            </div>
-          </div>
-          <div className="lg:col-span-5 relative">
-            <div className="relative rounded-3xl overflow-hidden shadow-2xl border border-white/40">
-              <img
-                src="https://images.unsplash.com/photo-1757342396554-c904a02afc8d?crop=entropy&cs=srgb&fm=jpg&q=85&w=1200"
-                alt="Granja sustentável"
-                className="w-full h-[420px] object-cover"
-              />
-              <div className="absolute bottom-4 left-4 right-4 glass rounded-2xl p-4 flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-emerald-500 text-white flex items-center justify-center">
-                  <CheckCircle2 className="w-5 h-5" />
-                </div>
-                <div>
-                  <div className="text-sm font-semibold text-slate-900">Conforme CONAMA</div>
-                  <div className="text-xs text-slate-600">Rastreabilidade digestato + reúso hídrico</div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* MODELO 4 PASSOS */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 py-16 lg:py-24">
-        <div className="mb-12 max-w-2xl">
-          <div className="text-xs font-semibold uppercase tracking-widest text-emerald-600 mb-3">O modelo</div>
-          <h2 className="font-display text-3xl sm:text-4xl font-bold tracking-tight text-slate-900">
-            Medir → Reduzir → Tratar → Reaproveitar
-          </h2>
-          <p className="mt-3 text-slate-600 text-lg">
-            Quatro passos para transformar granjas em unidades sustentáveis e economicamente viáveis.
-          </p>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
-          {STEPS.map((s, i) => {
-            const Icon = s.icon;
-            return (
-              <div key={s.title} className="slide-in relative bg-white rounded-2xl p-6 border border-slate-200/70 hover:border-slate-300 hover:shadow-lg transition-all" style={{ animationDelay: `${i * 80}ms` }} data-testid={`step-${s.title.toLowerCase()}`}>
-                <div className="flex items-center gap-3 mb-4">
-                  <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${s.color} flex items-center justify-center text-white shadow-md`}>
-                    <Icon className="w-6 h-6" />
-                  </div>
-                  <div className="font-mono text-xs text-slate-400">0{i + 1}</div>
-                </div>
-                <h3 className="font-display text-xl font-bold text-slate-900">{s.title}</h3>
-                <p className="mt-2 text-sm text-slate-600 leading-relaxed">{s.desc}</p>
-              </div>
-            );
-          })}
-        </div>
-      </section>
-
-      {/* PROFILES */}
-      <section className="bg-white border-y border-slate-200/70">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 py-16 lg:py-24">
-          <div className="mb-10 max-w-2xl">
-            <div className="text-xs font-semibold uppercase tracking-widest text-sky-600 mb-3">3 perfis, 3 visões</div>
-            <h2 className="font-display text-3xl sm:text-4xl font-bold tracking-tight text-slate-900">Escolha um perfil para explorar</h2>
-          </div>
-          <div className="grid md:grid-cols-3 gap-6">
-            {PROFILES.map((p) => {
-              const Icon = p.icon;
-              const bg = p.accent === "emerald" ? "from-emerald-500 to-teal-600" : p.accent === "sky" ? "from-sky-500 to-blue-600" : "from-amber-500 to-orange-600";
-              return (
-                <Link key={p.role} to={p.path} data-testid={`profile-card-${p.role}`} className="group relative rounded-2xl bg-slate-50 hover:bg-white border border-slate-200 hover:shadow-xl hover:-translate-y-1 transition-all p-6 overflow-hidden">
-                  <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${bg} flex items-center justify-center text-white mb-5 shadow-lg`}>
-                    <Icon className="w-7 h-7" />
-                  </div>
-                  <h3 className="font-display text-2xl font-bold text-slate-900">{p.title}</h3>
-                  <p className="mt-2 text-slate-600 text-sm">{p.desc}</p>
-                  <div className="mt-6 inline-flex items-center gap-1.5 text-sm font-semibold text-emerald-600 group-hover:gap-2 transition-all">
-                    Abrir dashboard <ArrowRight className="w-4 h-4" />
-                  </div>
-                </Link>
-              );
-            })}
-          </div>
-        </div>
-      </section>
-
-      <footer className="border-t border-slate-200/70 py-8">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 flex flex-wrap items-center justify-between gap-4 text-sm text-slate-500">
-          <div>© 2026 AquaSuíno · Projeto-piloto Frivatti + Prefeitura + Produtores</div>
-          <div className="flex items-center gap-2">
-            <Droplets className="w-4 h-4 text-emerald-500" />
-            <span>Medir → Reduzir → Tratar → Reaproveitar</span>
-          </div>
-        </div>
-      </footer>
-    </div>
-  );
+export default function Home() {
+  const { user } = useAuth();
+  return <main>
+    <section className="max-w-7xl mx-auto px-5 sm:px-8 py-14 lg:py-20 grid lg:grid-cols-2 gap-12 items-center">
+      <div><p className="text-xs font-bold tracking-widest uppercase text-emerald-700 mb-5">Água, despesas e informação no mesmo lugar</p>
+        <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-slate-900 leading-tight">Cuide da sua fazenda.<br/><span className="text-emerald-600">Entenda cada gasto.</span></h1>
+        <p className="text-lg text-slate-600 leading-relaxed mt-6 max-w-xl">O AquaSuíno ajuda agricultores e prefeituras a acompanhar o consumo de água, registrar despesas e identificar fazendas que precisam de atenção.</p>
+        <p className="text-slate-500 leading-relaxed mt-3">Troque anotações espalhadas por um histórico organizado para decidir o que verificar e onde agir.</p>
+        <div className="flex flex-wrap gap-3 mt-7"><Link to={user ? homeFor(user) : "/cadastro"} className="btn-primary rounded-full px-6 py-3 font-semibold inline-flex items-center gap-2">{user ? "Abrir meu painel" : "Cadastrar minha fazenda"}<ArrowRight className="w-4 h-4"/></Link><Link to="/demonstracao" className="rounded-full border border-slate-300 bg-white px-6 py-3 font-semibold text-slate-700">Experimentar em 2 minutos</Link></div>
+        {!user && <p className="mt-4 text-sm text-slate-500">Já tem acesso? <Link to="/login" className="font-semibold text-emerald-700 underline underline-offset-4">Entrar na minha conta</Link></p>}
+        <p className="mt-7 flex items-center gap-2 text-sm text-slate-500"><ShieldCheck className="w-5 h-5 text-emerald-600 shrink-0"/>Cada agricultor acessa somente sua própria fazenda.</p>
+      </div>
+      <div className="rounded-3xl bg-[#073f33] p-6 sm:p-9 text-white shadow-xl">
+        <p className="text-emerald-200 text-xs font-bold tracking-widest uppercase">Uma decisão começa com um registro</p><h2 className="text-2xl font-semibold mt-3 mb-6">Da leitura à próxima ação</h2>
+        {[{icon:Gauge,title:"Registre a leitura",text:"Informe o número do hidrômetro e a data."},{icon:Droplets,title:"Veja quanto consumiu",text:"O sistema calcula a diferença entre as leituras."},{icon:Wallet,title:"Acompanhe suas despesas",text:"Guarde os lançamentos e consulte o total."},{icon:FileText,title:"Decida com o histórico",text:"Compare os dados e baixe o relatório da fazenda."}].map((s,i)=><div key={s.title} className="flex gap-4 py-4 border-t border-white/10"><div className="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center shrink-0"><s.icon className="w-5 h-5 text-emerald-200"/></div><div><p className="font-semibold">{i+1}. {s.title}</p><p className="text-sm text-emerald-100/75 mt-1 leading-relaxed">{s.text}</p></div></div>)}
+      </div>
+    </section>
+    <section className="bg-white border-y border-slate-200"><div className="max-w-7xl mx-auto px-5 sm:px-8 py-14"><h2 className="text-3xl font-bold text-slate-900">O que você pode fazer aqui</h2><div className="grid md:grid-cols-2 gap-6 mt-7">
+      <article className="rounded-2xl p-7 border bg-emerald-50/40"><Tractor className="text-emerald-600 w-8 h-8"/><h3 className="text-xl font-bold mt-4">Para o agricultor</h3><p className="text-slate-600 mt-3 leading-relaxed">Registre água, despesas e dejetos. Consulte o histórico da sua fazenda e acompanhe a meta de consumo.</p><Link to={user ? homeFor(user) : "/cadastro"} className="inline-flex items-center gap-2 font-semibold text-emerald-700 mt-5">{user ? "Acessar meu painel" : "Começar meu cadastro"}<ArrowRight className="w-4 h-4"/></Link><p className="text-sm text-slate-500 mt-3">Sua fazenda já está cadastrada? Peça à prefeitura um acesso vinculado a ela.</p></article>
+      <article className="rounded-2xl p-7 border bg-slate-50"><Landmark className="text-sky-600 w-8 h-8"/><h3 className="text-xl font-bold mt-4">Para a prefeitura</h3><p className="text-slate-600 mt-3 leading-relaxed">Encontre uma fazenda, confira alertas, consulte despesas e relatórios e gerencie o acesso dos agricultores.</p><Link to={user ? homeFor(user) : "/login"} className="inline-flex items-center gap-2 font-semibold text-sky-700 mt-5">{user ? "Continuar no meu painel" : "Entrar com acesso institucional"}<ArrowRight className="w-4 h-4"/></Link><p className="text-sm text-slate-500 mt-3">O perfil institucional é concedido pela administração do sistema.</p></article>
+    </div></div></section>
+    <section className="max-w-7xl mx-auto px-5 sm:px-8 py-14 grid md:grid-cols-2 gap-8"><div><h2 className="text-2xl font-bold">Experimente o caminho completo</h2><p className="text-slate-600 mt-3 leading-relaxed">Na demonstração, você registra uma leitura, adiciona uma despesa e vê o resultado. Os dados são fictícios e ficam apenas nessa experiência.</p><Link to="/demonstracao" className="inline-flex items-center gap-2 text-emerald-700 font-semibold mt-4">Iniciar demonstração guiada<ArrowRight className="w-4 h-4"/></Link></div><div className="border-l-4 border-emerald-500 pl-6"><h2 className="font-semibold text-lg">Informação para apoiar decisões</h2><p className="text-slate-600 mt-3 leading-relaxed">Metas, biogás e retorno econômico são estimativas. Os registros ajudam no acompanhamento; resultados de economia, viabilidade e conformidade precisam ser verificados na operação da fazenda.</p></div></section>
+    <footer className="border-t p-6 text-center text-sm text-slate-500">AquaSuíno · Gestão de água e despesas na suinocultura</footer>
+  </main>;
 }

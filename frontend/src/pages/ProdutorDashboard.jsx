@@ -1,5 +1,9 @@
+import { Link, useParams } from "react-router-dom";
+import { useAuth } from "../lib/auth";
+import Despesas from "../components/Despesas";
+import RelatorioIndividual from "../components/RelatorioIndividual";
 import { useEffect, useState } from "react";
-import { fetchPropriedades, fetchPropriedade, createLeitura, createDejeto, resolverAlerta } from "../lib/api";
+import { fetchPropriedade, createLeitura, createDejeto, resolverAlerta } from "../lib/api";
 import { KpiCard } from "../components/KpiCard";
 import { Droplets, Gauge, Award, AlertTriangle, Flame, Camera, CheckCircle2, TrendingDown } from "lucide-react";
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, BarChart, Bar, Legend } from "recharts";
@@ -16,29 +20,30 @@ const brl = (v) => `R$ ${(v || 0).toLocaleString("pt-BR", { minimumFractionDigit
 const num = (v, digits = 1) => (v || 0).toLocaleString("pt-BR", { minimumFractionDigits: digits, maximumFractionDigits: digits });
 
 export default function ProdutorDashboard() {
-  const [props, setProps] = useState([]);
-  const [selected, setSelected] = useState(null);
+  const { user } = useAuth();
+  const { propId } = useParams();
+  const selected = user.role === "produtor" ? user.propriedade_id : propId;
+  const [error, setError] = useState("");
   const [detail, setDetail] = useState(null);
   const [loading, setLoading] = useState(true);
   const [openLeitura, setOpenLeitura] = useState(false);
   const [openDejeto, setOpenDejeto] = useState(false);
 
-  const load = async () => {
-    setLoading(true);
-    const p = await fetchPropriedades();
-    setProps(p);
-    if (p.length && !selected) setSelected(p[0].id);
-  };
-
   const loadDetail = async (id) => {
-    if (!id) return;
-    const d = await fetchPropriedade(id);
-    setDetail(d);
-    setLoading(false);
+    try { setDetail(await fetchPropriedade(id)); }
+    catch { toast.error("Não foi possível atualizar a propriedade."); }
   };
-
-  useEffect(() => { load(); }, []);
-  useEffect(() => { if (selected) loadDetail(selected); }, [selected]);
+  useEffect(() => {
+    let active = true;
+    setLoading(true); setDetail(null); setError("");
+    if (!selected) { setLoading(false); return; }
+    fetchPropriedade(selected).then(d => { if (active) setDetail(d); })
+      .catch(() => { if (active) setError("Não foi possível carregar esta fazenda. Verifique seu acesso e tente novamente."); })
+      .finally(() => { if (active) setLoading(false); });
+    return () => { active = false; };
+  }, [selected]);
+  if (error) return <p role="alert" className="p-10 text-red-700">{error}</p>;
+  if (!selected) return <p className="p-10">Sua conta ainda não tem uma fazenda vinculada. Entre em contato com a prefeitura.</p>;
 
   if (loading || !detail) {
     return (
@@ -73,22 +78,11 @@ export default function ProdutorDashboard() {
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 py-10 fade-in">
       <div className="flex flex-wrap items-end justify-between gap-4 mb-8">
         <div>
-          <div className="text-xs font-semibold uppercase tracking-widest text-emerald-600 mb-1">Painel do Produtor</div>
+          <div className="text-xs font-semibold uppercase tracking-widest text-emerald-600 mb-1">{user.role === "prefeitura" ? "Detalhes da propriedade" : "Painel do Produtor"}</div>
           <h1 className="font-display text-3xl sm:text-4xl font-bold text-slate-900">{prop.nome}</h1>
           <div className="text-slate-500 mt-1">{prop.municipio} · {prop.num_suinos} suínos · Hidrômetro {prop.hidrometro_serial}</div>
         </div>
         <div className="flex flex-wrap gap-2 items-center">
-          <Select value={selected} onValueChange={setSelected}>
-            <SelectTrigger className="w-[240px]" data-testid="select-propriedade">
-              <SelectValue placeholder="Selecionar propriedade" />
-            </SelectTrigger>
-            <SelectContent>
-              {props.map((p) => (
-                <SelectItem key={p.id} value={p.id} data-testid={`option-prop-${p.id}`}>{p.nome}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-
           <Dialog open={openLeitura} onOpenChange={setOpenLeitura}>
             <DialogTrigger asChild>
               <Button className="btn-primary pill" data-testid="btn-open-nova-leitura">
@@ -109,14 +103,24 @@ export default function ProdutorDashboard() {
         </div>
       </div>
 
+      {user.role === "prefeitura" && <Link to="/prefeitura" className="inline-block mb-5 text-emerald-700">← Voltar para todas as fazendas</Link>}
+      <section className="bg-emerald-50 border border-emerald-100 rounded-2xl p-5 mb-6">
+        <h2 className="font-semibold text-lg">{detail.leituras.length ? "Seu próximo passo" : "Comece pela primeira leitura"}</h2>
+        <p className="text-sm text-slate-600 mt-2">{detail.leituras.length ? "Registre a próxima leitura para acompanhar o consumo desde o último registro. Use as despesas e o relatório para revisar a evolução da fazenda." : "Informe o número acumulado do hidrômetro. A primeira leitura vira a referência; o consumo aparece a partir da segunda."}</p>
+        <nav aria-label="Ações da fazenda" className="flex flex-wrap gap-4 mt-4 text-sm font-semibold text-emerald-800">
+          <button onClick={() => setOpenLeitura(true)}>1. Registrar água</button><a href="#despesas">2. Registrar despesas</a><a href="#relatorio">3. Consultar relatório</a>
+        </nav>
+      </section>
       {/* KPIS */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 mb-8">
-        <KpiCard label="Consumo último mês" value={num(resumo.ultimo_consumo_m3, 1)} unit="m³" icon={Droplets} accent="aqua" testId="kpi-consumo-ultimo" sub={`Baseline: ${num(resumo.baseline_m3, 1)} m³`} />
-        <KpiCard label="Meta mensal" value={num(resumo.meta_m3, 1)} unit="m³" icon={Gauge} accent="emerald" testId="kpi-meta" sub={`Redução alvo: ${prop.meta_reducao_pct}%`} />
-        <KpiCard label="Bônus estimado" value={brl(resumo.bonus_estimado_brl).replace("R$ ", "")} unit="R$" icon={Award} accent="amber" testId="kpi-bonus" sub="Água + biogás (12 meses)" />
-        <KpiCard label="Alertas ativos" value={resumo.alertas_ativos} icon={AlertTriangle} accent="amber" testId="kpi-alertas" sub={resumo.alertas_ativos === 0 ? "Tudo em ordem" : "Verificar"} />
+        <KpiCard label="Consumo entre leituras" value={num(resumo.ultimo_consumo_m3, 1)} unit="m³" icon={Droplets} accent="aqua" testId="kpi-consumo-ultimo" sub={`Referência histórica: ${num(resumo.baseline_m3, 1)} m³`} />
+        <KpiCard label="Meta de consumo" value={num(resumo.meta_m3, 1)} unit="m³" icon={Gauge} accent="emerald" testId="kpi-meta" sub={`Redução alvo: ${prop.meta_reducao_pct}%`} />
+        <KpiCard label="Bônus estimado" value={brl(resumo.bonus_estimado_brl).replace("R$ ", "")} unit="R$" icon={Award} accent="amber" testId="kpi-bonus" sub="Simulação; não é pagamento garantido" />
+        <KpiCard label="Alertas ativos" value={resumo.alertas_ativos} icon={AlertTriangle} accent="amber" testId="kpi-alertas" sub={resumo.alertas_ativos === 0 ? "Sem alertas registrados" : "Verificar"} />
       </div>
 
+      <Despesas key={prop.id} propId={prop.id} />
+      <RelatorioIndividual key={`report-${prop.id}`} propId={prop.id} />
       {/* CHARTS */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
         <div className="bg-white rounded-2xl border border-slate-200/70 p-6" data-testid="chart-consumo">
@@ -217,11 +221,12 @@ function NovaLeituraDialog({ propId, onSaved }) {
       fd.append("data_leitura", new Date(data).toISOString());
       if (obs) fd.append("observacao", obs);
       if (foto) fd.append("foto", foto);
-      await createLeitura(fd);
+      const result = await createLeitura(fd);
+      if (result.aviso) toast.warning(result.aviso);
       toast.success("Leitura registrada");
       onSaved();
     } catch (e) {
-      toast.error("Erro ao salvar leitura");
+      toast.error(typeof e.response?.data?.detail === "string" ? e.response.data.detail : "Não foi possível salvar a leitura. Tente novamente.");
     } finally {
       setSaving(false);
     }

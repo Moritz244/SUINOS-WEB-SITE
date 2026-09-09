@@ -21,7 +21,12 @@ def hash_password(password: str) -> str:
 
 
 def verify_password(plain: str, hashed: str) -> bool:
-    return bcrypt.checkpw(plain.encode("utf-8"), hashed.encode("utf-8"))
+    try:
+        if len(plain.encode("utf-8")) > 72:
+            return False
+        return bcrypt.checkpw(plain.encode("utf-8"), hashed.encode("utf-8"))
+    except (ValueError, TypeError):
+        return False
 
 
 def create_access_token(user: dict) -> str:
@@ -31,12 +36,13 @@ def create_access_token(user: dict) -> str:
         "role": user["role"],
         "exp": datetime.now(timezone.utc) + timedelta(hours=12),
         "type": "access",
+        "version": user.get("session_version", 0),
     }
     return jwt.encode(payload, os.environ["JWT_SECRET"], algorithm=JWT_ALGORITHM)
 
 
 def public_user(user: dict) -> dict:
-    return {k: v for k, v in user.items() if k not in ("_id", "password_hash")}
+    return {**{k: user.get(k) for k in ("id", "email", "nome", "role", "propriedade_id")}, "ativo": user.get("ativo", True)}
 
 
 async def get_current_user(request: Request) -> dict:
@@ -48,7 +54,7 @@ async def get_current_user(request: Request) -> dict:
     if not token:
         raise HTTPException(status_code=401, detail="Não autenticado")
     try:
-        payload = jwt.decode(token, os.environ["JWT_SECRET"], algorithms=[JWT_ALGORITHM])
+        payload = jwt.decode(token, os.environ["JWT_SECRET"], algorithms=[JWT_ALGORITHM], options={"require": ["sub", "exp", "type"]})
     except jwt.ExpiredSignatureError:
         raise HTTPException(status_code=401, detail="Sessão expirada")
     except jwt.InvalidTokenError:
@@ -56,8 +62,10 @@ async def get_current_user(request: Request) -> dict:
     if payload.get("type") != "access":
         raise HTTPException(status_code=401, detail="Token inválido")
     user = await _db.users.find_one({"id": payload["sub"]}, {"_id": 0})
-    if not user:
+    if not user or user.get("role") not in ROLES:
         raise HTTPException(status_code=401, detail="Usuário não encontrado")
+    if not user.get("ativo", True) or payload.get("version", 0) != user.get("session_version", 0):
+        raise HTTPException(401, "Sessão encerrada. Entre novamente.")
     return user
 
 
@@ -76,11 +84,12 @@ def assert_prop_access(user: dict, prop_id: str):
 
 async def check_lockout(identifier: str):
     doc = await _db.login_attempts.find_one({"identifier": identifier})
-    if doc and doc.get("count", 0) >= 5:
+    if doc:
         locked_until = datetime.fromisoformat(doc["locked_until"])
-        if datetime.now(timezone.utc) < locked_until:
+        if datetime.now(timezone.utc) >= locked_until:
+            await _db.login_attempts.delete_one({"identifier": identifier})
+        elif doc.get("count", 0) >= 5:
             raise HTTPException(status_code=429, detail="Muitas tentativas. Tente novamente em 15 minutos.")
-        await _db.login_attempts.delete_one({"identifier": identifier})
 
 
 async def register_failure(identifier: str):

@@ -1,10 +1,12 @@
 import axios from "axios";
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+const BACKEND_URL = (process.env.REACT_APP_BACKEND_URL || "").replace(/\/$/, "");
 export const API = `${BACKEND_URL}/api`;
 
 export const api = axios.create({
   baseURL: API,
+  withCredentials: true,
+  headers: { "X-Requested-With": "AquaSuino" },
 });
 
 export const fetchPropriedades = () => api.get("/propriedades").then((r) => r.data);
@@ -19,3 +21,10 @@ export const fetchDashPrefeitura = () => api.get("/dashboard/prefeitura").then((
 export const createLeitura = (formData) =>
   api.post("/leituras", formData, { headers: { "Content-Type": "multipart/form-data" } }).then((r) => r.data);
 export const relatorioPdfUrl = () => `${API}/relatorio/viabilidade`;
+
+api.interceptors.response.use(r => r, error => {
+  if (error.response?.status === 401 && !error.config?.url?.startsWith("/auth/")) {
+    window.dispatchEvent(new Event("session-expired"));
+  }
+  return Promise.reject(error);
+});
